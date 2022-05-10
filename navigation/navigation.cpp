@@ -1,4 +1,7 @@
-#include <vector>
+#include "cstdio"
+#include "cstdlib"
+#include "cstddef"
+
 
 #include "Sample_SoloMesh.h"
 #include "Sample_TempObstacles.h"
@@ -6,11 +9,9 @@
 //#include "NavMeshTesterTool.h"
 #include "InputGeom.h"
 
-
-#include <map>
 #include <vector>
-#include "stdio.h"
-#include "stdlib.h"
+#include <map>
+
 
 #ifndef NavigationAPI
 #ifdef _WIN32
@@ -21,7 +22,7 @@
 #endif
 
 #define SAFE_DEL_PTR(p) if (p) delete p;\
-p = nullptr
+p = NULL
 
 extern "C" {
 
@@ -59,12 +60,12 @@ extern "C" {
 
         Sample* sample = sdk->sample;
         InputGeom* geom = sample->getInputGeom();
-        if (geom != nullptr) {
+        if (geom != NULL) {
             SAFE_DEL_PTR(geom);
         }
 
         BuildContext* ctx = sample->getContext();
-        if (ctx != nullptr) {
+        if (ctx != NULL) {
             SAFE_DEL_PTR(ctx);
         }
 
@@ -94,12 +95,12 @@ extern "C" {
         Sample *sample = sdk->sample;
 
         InputGeom* geom = sample->getInputGeom();
-        if (geom != nullptr) {
+        if (geom != NULL) {
             SAFE_DEL_PTR(geom);
         }
         
         BuildContext* ctx = sample->getContext();
-        if (ctx != nullptr) {
+        if (ctx != NULL) {
             SAFE_DEL_PTR(ctx);
         }
 

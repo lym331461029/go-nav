@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(RecastNavigation)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
 # lib versions
 SET(SOVERSION 1)
 set(LIB_VERSION 1.5.1)
