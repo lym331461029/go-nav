@@ -6,9 +6,9 @@ project(RecastNavigation)
 SET(SOVERSION 1)
 set(LIB_VERSION 1.5.1)
 string(REPLACE "." "," LIB_VERSION_NUM "${LIB_VERSION}.0")
+#set(CMAKE_APPLE_SILICON_PROCESSOR arm64)
 
 option(RECASTNAVIGATION_DEMO "Build demo" ON)
-option(RECASTNAVIGATION_TESTS "Build tests" ON)
 option(RECASTNAVIGATION_EXAMPLES "Build examples" ON)
 
 if(MSVC AND BUILD_SHARED_LIBS)
@@ -18,8 +18,8 @@ endif()
 include(GNUInstallDirs)
 
 configure_file(
-    "${RecastNavigation_SOURCE_DIR}/version.h.in"
-    "${RecastNavigation_BINARY_DIR}/version.h")
+        "${RecastNavigation_SOURCE_DIR}/version.h.in"
+        "${RecastNavigation_BINARY_DIR}/version.h")
 install(FILES "${RecastNavigation_BINARY_DIR}/version.h" DESTINATION
         ${CMAKE_INSTALL_INCLUDEDIR}/recastnavigation)
 
@@ -42,12 +42,8 @@ add_subdirectory(Detour)
 add_subdirectory(DetourCrowd)
 add_subdirectory(DetourTileCache)
 add_subdirectory(Recast)
+add_subdirectory(navigation)
 
 if (RECASTNAVIGATION_DEMO)
     add_subdirectory(RecastDemo)
-endif ()
-
-if (RECASTNAVIGATION_TESTS)
-    enable_testing()
-    add_subdirectory(Tests)
 endif ()
