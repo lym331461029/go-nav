@@ -34,7 +34,8 @@ NavigationAPI int FindPath2(navigation_position_t start, navigation_position_t e
 NavigationAPI int  FreePathCache(navigation_sdk_t sdk, int cacheSeq);
 
 typedef unsigned int uint;
-NavigationAPI int  AddObstacle(navigation_sdk_t sdk, navigation_position_t pos,const float radius,const float height,uint* result);
+NavigationAPI int  AddCylinderObstacle(navigation_sdk_t sdk, navigation_position_t pos,const float radius,const float height,uint* result);
+NavigationAPI int  AddBoxObstacle(navigation_sdk_t sdk, navigation_position_t bMinPos, navigation_position_t bMaxPos,uint* result);
 NavigationAPI int  RemoveObstacle(navigation_sdk_t sdk, uint refNo);
 #ifdef __cplusplus
 }

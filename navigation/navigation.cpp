@@ -1,6 +1,8 @@
-#include "cstdio"
-#include "cstdlib"
-#include "cstddef"
+#include <cstdio>
+#include <cstdlib>
+#include <cstddef>
+#include <mutex>
+//#include <shared_mutex>
 
 
 #include "Sample_SoloMesh.h"
@@ -37,6 +39,7 @@ extern "C" {
         Sample *sample;
         std::map<int,std::vector<navigation_position_t> > resultCache;
         int cacheSeq;
+        std::mutex mutex;
     } *navigation_sdk_t;
 
 
@@ -57,8 +60,9 @@ extern "C" {
     
     NavigationAPI int LoadMap(char *path, navigation_sdk_t sdk) {
         if (!sdk) return -1;
-
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
         Sample* sample = sdk->sample;
+
         InputGeom* geom = sample->getInputGeom();
         if (geom != NULL) {
             SAFE_DEL_PTR(geom);
@@ -92,8 +96,9 @@ extern "C" {
     
     NavigationAPI void UnloadMap(navigation_sdk_t sdk) {
         if (!sdk) return;
-        Sample *sample = sdk->sample;
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
 
+        Sample *sample = sdk->sample;
         InputGeom* geom = sample->getInputGeom();
         if (geom != NULL) {
             SAFE_DEL_PTR(geom);
@@ -110,6 +115,7 @@ extern "C" {
     
     NavigationAPI int FindPath(navigation_position_t start, navigation_position_t end, navigation_sdk_t sdk) {
         if (!sdk) return -1;
+        //std::lock_guard<std::mutex> lockGuard(sdk->mutex);
         Sample *sample = sdk->sample;
         float startPos[3];
         startPos[0] = start.x;
@@ -122,8 +128,6 @@ extern "C" {
         endPos[2] = end.z;
 
         float ingore = 0.0f;
-        
-        //printf("%s\n", "FindPath");
 
         sample->handleClick(&ingore, startPos, true);
         sample->handleClick(&ingore, endPos, false);
@@ -149,6 +153,7 @@ extern "C" {
     NavigationAPI int FindPath2(navigation_position_t start, navigation_position_t end, navigation_sdk_t sdk, navigation_position_t **ret, int *retLen)
     {
         if (!sdk) return -1;
+
         printf("%s\n", "FindPath2");
 
         Sample *sample = sdk->sample;
@@ -167,15 +172,7 @@ extern "C" {
 
         int resultNum  = 0;
         {
-//            sample->getNavMeshQuery()->init(sample->getNavMesh(), 65535);
-//            NavMeshTesterTool *tt = new NavMeshTesterTool();
-//            tt->init(sample);
-//
-//
-//            tt->handleClick(&ingore, startPos, true);
-//            tt->handleClick(&ingore, endPos, false);
-//
-//            resultNum = tt->getResultNum();
+            std::lock_guard<std::mutex> lockGuard(sdk->mutex);
             sample->handleClick(&ingore, startPos, true);
             sample->handleClick(&ingore, endPos, false);
             resultNum = sample->getResultNum();
@@ -208,44 +205,68 @@ extern "C" {
     NavigationAPI int  FreePathCache(navigation_sdk_t sdk, int cacheSeq)
     {
         if (!sdk) return -1;
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
+
         sdk->resultCache.erase(cacheSeq);
-        printf("%s\n", "FreePathCache");
+        //printf("%s\n", "FreePathCache");
         return 0;
     }
 
     typedef unsigned int uint;
-    NavigationAPI int  AddObstacle(navigation_sdk_t sdk, navigation_position_t pos,const float radius,const float height,uint* result)
+    NavigationAPI int  AddCylinderObstacle(navigation_sdk_t sdk, navigation_position_t pos,const float radius,const float height,uint* result)
     {
         if (!sdk) return -1;
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
+
         printf("%s\n", "AddObstacle");
 
         Sample *sample = sdk->sample;
         Sample_TempObstacles *tempObstacleSample = dynamic_cast<Sample_TempObstacles*>(sample);
 
-        tempObstacleSample->saveNavMesh("./mesh_add_before.bin", tempObstacleSample->getNavMesh());
+        //tempObstacleSample->saveNavMesh("./mesh_add_before.bin", tempObstacleSample->getNavMesh());
         
         float inputPos[3];
         inputPos[0] = pos.x;
         inputPos[1] = pos.y;
         inputPos[2] = pos.z;
-
-        //printf("================== %f %f %f\n",inputPos[0], inputPos[1],inputPos[2] );
-        
         
         tempObstacleSample->addTempObstacle(inputPos,radius,height,result);
         tempObstacleSample->handleUpdate(inputPos[0]);
 
-        tempObstacleSample->saveNavMesh("./mesh_add_after.bin", tempObstacleSample->getNavMesh());
+        //tempObstacleSample->saveNavMesh("./mesh_add_after.bin", tempObstacleSample->getNavMesh());
 
-        
-        //printf("================== %d\n",*result);
         return 0;
     }
 
-    
+    NavigationAPI int  AddBoxObstacle(navigation_sdk_t sdk, navigation_position_t bMinPos, navigation_position_t bMaxPos,uint* result)
+    {
+        if (!sdk) return -1;
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
+
+        printf("%s\n", "AddBoxObstacle");
+
+        Sample *sample = sdk->sample;
+        Sample_TempObstacles *tempObstacleSample = dynamic_cast<Sample_TempObstacles*>(sample);
+
+        float inputBMin[3], inputBMax[3];
+        inputBMin[0] = bMinPos.x;
+        inputBMin[1] = bMinPos.y;
+        inputBMin[2] = bMinPos.z;
+
+        inputBMax[0] = bMaxPos.x;
+        inputBMax[1] = bMaxPos.y;
+        inputBMax[2] = bMaxPos.z;
+
+        tempObstacleSample->addBoxTempObstacle(inputBMin,inputBMax,result);
+        tempObstacleSample->handleUpdate(inputBMin[0]);
+        return 0;
+    }
+
     NavigationAPI int  RemoveObstacle(navigation_sdk_t sdk, uint refNo)
     {
         if (!sdk) return -1;
+        std::lock_guard<std::mutex> lockGuard(sdk->mutex);
+
         printf("%s\n", "RemoveObstacle");
         Sample *sample = sdk->sample;
         Sample_TempObstacles *tempObstacleSample = dynamic_cast<Sample_TempObstacles*>(sample);

@@ -1180,7 +1180,6 @@ void Sample_TempObstacles::handleMeshChanged(class InputGeom* geom)
 
 void Sample_TempObstacles::addTempObstacle(const float* pos, const float radius, const float height, dtObstacleRef* result)
 {
-    //printf("--------- Sample_TempObstacles::addTempObstacle\n");
     if (!m_tileCache)
         return;
     float p[3];
@@ -1189,6 +1188,16 @@ void Sample_TempObstacles::addTempObstacle(const float* pos, const float radius,
     if (int code = m_tileCache->addObstacle(p, radius, height, result) != DT_SUCCESS)
     {
         printf("m_tileCache->addObstacle error code %d\n",code);
+    }
+}
+
+void Sample_TempObstacles::addBoxTempObstacle(const float* bmin, const float* bmax, dtObstacleRef* result)
+{
+    if (!m_tileCache)
+        return;
+    if (int code = m_tileCache->addBoxObstacle(bmin, bmax, result) != DT_SUCCESS)
+    {
+        printf("m_tileCache->addBoxObstacle error code %d\n",code);
     }
 }
 
