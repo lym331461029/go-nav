@@ -31,13 +31,6 @@ add_dependencies(navigation DebugUtils Detour DetourCrowd DetourTileCache Recast
 target_link_libraries(navigation DebugUtils Detour DetourCrowd DetourTileCache Recast)
 
 
-#set_target_properties(navigation PROPERTIES
-#        SOVERSION ${SOVERSION}
-#        VERSION ${LIB_VERSION}
-#        COMPILE_PDB_OUTPUT_DIRECTORY .
-#        COMPILE_PDB_NAME "Detour-d"
-#        )
-
 file(GLOB INCLUDES Include/*.h)
 install(FILES ${INCLUDES} DESTINATION
         ${CMAKE_INSTALL_INCLUDEDIR})
@@ -48,6 +41,9 @@ install(TARGETS navigation
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT library
         )
+install(DIRECTORY ../RecastDemo/Bin/Meshes DESTINATION bin)
+install(DIRECTORY ../RecastDemo/Bin/TestCases DESTINATION bin)
+install(FILES ../RecastDemo/Bin/DroidSans.ttf DESTINATION bin)
 
 
 
