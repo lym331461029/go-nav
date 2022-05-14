@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
 
+if ( NOT DEFINED BUILD_SHARED_LIBS)
+    set(BUILD_SHARED_LIBS ON)
+endif()
+
 file(GLOB SOURCES ./*.cpp ../RecastDemo/Contrib/fastlz/fastlz.c)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 #set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
-add_library(navigation SHARED ${SOURCES} Include/navigation.h)
+add_library(navigation ${SOURCES} Include/navigation.h)
+set_property(TARGET navigation PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 #set(CMAKE_APPLE_SILICON_PROCESSOR arm64)
 include_directories(SYSTEM ../RecastDemo/Contrib/fastlz)
